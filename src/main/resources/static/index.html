@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense &amp; Income Tracker - Java Web App</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-alt: #f1f5f9;
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --income: #16a34a;
+            --income-bg: #dcfce7;
+            --income-border: #86efac;
+            --expense: #dc2626;
+            --expense-bg: #fee2e2;
+            --expense-border: #fca5a5;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 28px 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 3px;
+        }
+
+        .badge-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--surface-alt);
+        }
+
+        .badge-status {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            display: inline-block;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .summary-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .summary-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .val-income {
+            color: var(--income);
+        }
+
+        .val-expense {
+            color: var(--expense);
+        }
+
+        .val-balance {
+            color: var(--primary);
+        }
+
+        .val-count {
+            color: var(--text-primary);
+        }
+
+        /* Form Card */
+        .form-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .form-card h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr 1.3fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        @media (max-width: 840px) {
+            form {
+                grid-template-columns: 1fr 1fr;
+            }
+            .btn-submit-container {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 520px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+            .btn-submit-container {
+                grid-column: span 1;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        input, select {
+            height: 40px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        button.btn-primary {
+            height: 40px;
+            padding: 0 18px;
+            border-radius: 6px;
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.92rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Table Card */
+        .table-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-toolbar h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-type {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .type-income {
+            background-color: var(--income-bg);
+            color: var(--income);
+            border: 1px solid var(--income-border);
+        }
+
+        .type-expense {
+            background-color: var(--expense-bg);
+            color: var(--expense);
+            border: 1px solid var(--expense-border);
+        }
+
+        .badge-cat {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background-color: var(--surface-alt);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .amount-cell {
+            font-weight: 600;
+        }
+
+        .amount-income {
+            color: var(--income);
+        }
+
+        .amount-expense {
+            color: var(--expense);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--expense);
+            border: 1px solid #fecaca;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--expense);
+            color: #ffffff;
+            border-color: var(--expense);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 12px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h1 id="app-title">Expense &amp; Income Tracker</h1>
+                <p>Java Spring Boot Web Application &bull; Port 8081</p>
+            </div>
+            <div class="badge-group">
+                <span class="badge badge-status">
+                    <span class="dot"></span>
+                    <span id="service-status">Backend: Checking...</span>
+                </span>
+                <span class="badge">Port: 8081</span>
+                <span class="badge" id="version-badge">v1.0.0</span>
+            </div>
+        </header>
+
+        <!-- Summary KPIs -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Total Income</div>
+                <div class="summary-value val-income" id="total-income">₹0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Expenses</div>
+                <div class="summary-value val-expense" id="total-expenses">₹0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Remaining Balance</div>
+                <div class="summary-value val-balance" id="remaining-balance">₹0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Transactions</div>
+                <div class="summary-value val-count" id="count-val">0</div>
+            </div>
+        </div>
+
+        <!-- Add Transaction Form -->
+        <div class="form-card">
+            <h2>Add New Record</h2>
+            <form id="record-form" onsubmit="handleAddRecord(event)">
+                <div class="input-group">
+                    <label for="date-input">Date</label>
+                    <input type="date" id="date-input" required>
+                </div>
+                <div class="input-group">
+                    <label for="desc-input">Description</label>
+                    <input type="text" id="desc-input" placeholder="e.g. Groceries, Freelance" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="cat-select">Category</label>
+                    <select id="cat-select">
+                        <option value="Salary">Salary</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other Income">Other Income</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="type-select">Type</label>
+                    <select id="type-select">
+                        <option value="Expense">Expense</option>
+                        <option value="Income">Income</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="amount-input">Amount (₹)</label>
+                    <input type="number" id="amount-input" step="1" min="1" placeholder="0" required>
+                </div>
+                <div class="btn-submit-container">
+                    <button type="submit" class="btn-primary">+ Add</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Records Table -->
+        <div class="table-card">
+            <div class="table-toolbar">
+                <h2>Transaction Records</h2>
+                <div class="filter-group">
+                    <button type="button" class="filter-btn active" onclick="setFilter('All', this)">All</button>
+                    <button type="button" class="filter-btn" onclick="setFilter('Expense', this)">Expenses</button>
+                    <button type="button" class="filter-btn" onclick="setFilter('Income', this)">Income</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">ID</th>
+                            <th style="width: 120px;">Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Amount (₹)</th>
+                            <th style="text-align: right; width: 80px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="record-tbody">
+                        <tr>
+                            <td colspan="7" class="empty-state">Loading transactions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            CIA 2 DevOps CI/CD Application &bull; Expense &amp; Income Tracker &bull; Running on Port 8081
+        </footer>
+    </div>
+
+    <script>
+        let allTransactions = [];
+        let currentFilter = 'All';
+
+        // Format currency with Indian / standard comma grouping
+        function formatRupee(amount) {
+            return '₹' + Number(amount).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        }
+
+        // Check backend health & app info
+        async function fetchInfo() {
+            try {
+                const res = await fetch('/health');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('service-status').textContent = 'Backend: ' + data.status;
+                }
+            } catch (e) {
+                document.getElementById('service-status').textContent = 'Backend: Offline';
+            }
+
+            try {
+                const res = await fetch('/api/info');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.version) document.getElementById('version-badge').textContent = 'v' + data.version;
+                    if (data.application) document.getElementById('app-title').textContent = data.application;
+                }
+            } catch (e) {
+                console.warn('Could not load /api/info', e);
+            }
+        }
+
+        // Fetch summary
+        async function fetchSummary() {
+            try {
+                const res = await fetch('/api/summary');
+                if (res.ok) {
+                    const s = await res.json();
+                    document.getElementById('total-income').textContent = formatRupee(s.totalIncome || 0);
+                    document.getElementById('total-expenses').textContent = formatRupee(s.totalExpenses || 0);
+                    document.getElementById('remaining-balance').textContent = formatRupee(s.remainingBalance || 0);
+                    document.getElementById('count-val').textContent = s.count || 0;
+                }
+            } catch (e) {
+                console.error('Failed to fetch summary:', e);
+            }
+        }
+
+        // Fetch records
+        async function loadRecords() {
+            try {
+                const res = await fetch('/api/expenses');
+                if (res.ok) {
+                    allTransactions = await res.json();
+                    renderTable();
+                    fetchSummary();
+                }
+            } catch (e) {
+                console.error('Failed to load transactions:', e);
+            }
+        }
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('record-tbody');
+            tbody.innerHTML = '';
+
+            const items = allTransactions.filter(item => {
+                if (currentFilter === 'All') return true;
+                return (item.type || '').toLowerCase() === currentFilter.toLowerCase();
+            });
+
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No transactions match the selected filter.</td></tr>';
+                return;
+            }
+
+            items.forEach(item => {
+                const isIncome = (item.type || '').toLowerCase() === 'income';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${item.id}</strong></td>
+                    <td>${escapeHtml(item.date || '')}</td>
+                    <td><strong>${escapeHtml(item.description || item.title || '')}</strong></td>
+                    <td><span class="badge-cat">${escapeHtml(item.category || 'Other')}</span></td>
+                    <td>
+                        <span class="badge-type ${isIncome ? 'type-income' : 'type-expense'}">
+                            ${isIncome ? 'Income' : 'Expense'}
+                        </span>
+                    </td>
+                    <td class="amount-cell ${isIncome ? 'amount-income' : 'amount-expense'}">
+                        ${isIncome ? '+' : '-'}${formatRupee(item.amount)}
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn-delete" onclick="handleDelete(${item.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Add record
+        async function handleAddRecord(e) {
+            e.preventDefault();
+            const dateInput = document.getElementById('date-input');
+            const descInput = document.getElementById('desc-input');
+            const catSelect = document.getElementById('cat-select');
+            const typeSelect = document.getElementById('type-select');
+            const amountInput = document.getElementById('amount-input');
+
+            const date = dateInput.value;
+            const description = descInput.value.trim();
+            const category = catSelect.value;
+            const type = typeSelect.value;
+            const amount = parseFloat(amountInput.value);
+
+            if (!description || isNaN(amount) || amount <= 0) {
+                alert('Please enter valid transaction details.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/expenses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: date,
+                        description: description,
+                        category: category,
+                        type: type,
+                        amount: amount
+                    })
+                });
+
+                if (res.ok) {
+                    descInput.value = '';
+                    amountInput.value = '';
+                    descInput.focus();
+                    await loadRecords();
+                } else {
+                    alert('Server rejected the transaction data.');
+                }
+            } catch (err) {
+                alert('Network error while adding record.');
+            }
+        }
+
+        // Delete record
+        async function handleDelete(id) {
+            if (!confirm(`Are you sure you want to delete transaction #${id}?`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/expenses/' + id, { method: 'DELETE' });
+                if (res.ok) {
+                    await loadRecords();
+                } else {
+                    alert('Failed to delete transaction.');
+                }
+            } catch (err) {
+                alert('Network error while deleting transaction.');
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Set default date to today
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-input').value = today;
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setDefaultDate();
+            fetchInfo();
+            loadRecords();
+        });
+    </script>
+</body>
+</html>
