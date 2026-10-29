@@ -21,3 +21,5 @@ public class AppController {
         return Map.of("status", "UP");
     }
 }
+
+// ok
