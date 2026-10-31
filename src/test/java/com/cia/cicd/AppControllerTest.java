@@ -1,3 +1,4 @@
+
 package com.cia.cicd;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +50,7 @@ class AppControllerTest {
     void getExpensesReturnsSeedTransactions() throws Exception {
         mockMvc.perform(get("/api/expenses"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(20)))
+                .andExpect(jsonPath("$", hasSize(10)))
                 .andExpect(jsonPath("$[0].description").value("Monthly Salary"))
                 .andExpect(jsonPath("$[0].type").value("Income"))
                 .andExpect(jsonPath("$[0].amount").value(35000.0));
@@ -60,9 +61,9 @@ class AppControllerTest {
         mockMvc.perform(get("/api/summary"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalIncome").value(40000.0))
-                .andExpect(jsonPath("$.totalExpenses").value(23627.0))
-                .andExpect(jsonPath("$.remainingBalance").value(16373.0))
-                .andExpect(jsonPath("$.count").value(20));
+                .andExpect(jsonPath("$.totalExpenses").value(12328.0))
+                .andExpect(jsonPath("$.remainingBalance").value(27672.0))
+                .andExpect(jsonPath("$.count").value(10));
     }
 
     @Test
@@ -73,7 +74,7 @@ class AppControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newExpense)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(21))
+                .andExpect(jsonPath("$.id").value(11))
                 .andExpect(jsonPath("$.description").value("Coffee"))
                 .andExpect(jsonPath("$.type").value("Expense"))
                 .andExpect(jsonPath("$.amount").value(80.0));
@@ -97,7 +98,7 @@ class AppControllerTest {
 
         mockMvc.perform(get("/api/summary"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.count").value(19))
-                .andExpect(jsonPath("$.totalExpenses").value(23577.0));
+                .andExpect(jsonPath("$.count").value(9))
+                .andExpect(jsonPath("$.totalExpenses").value(12278.0));
     }
 }
