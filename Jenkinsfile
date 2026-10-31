@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'priyajit01/cicd-pipeline'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -17,7 +21,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t priyajit01/cicd-pipeline:%BUILD_NUMBER% .'
+                bat 'docker build -t %DOCKER_IMAGE%:%BUILD_NUMBER% .'
             }
         }
 
@@ -29,9 +33,23 @@ pipeline {
                     passwordVariable: 'DOCKER_TOKEN'
                 )]) {
                     bat 'docker login -u "%DOCKER_USER%" -p "%DOCKER_TOKEN%"'
-                    bat 'docker push priyajit01/cicd-pipeline:%BUILD_NUMBER%'
-                    bat 'docker tag priyajit01/cicd-pipeline:%BUILD_NUMBER% priyajit01/cicd-pipeline:latest'
-                    bat 'docker push priyajit01/cicd-pipeline:latest'
+                    bat 'docker push %DOCKER_IMAGE%:%BUILD_NUMBER%'
+                    bat 'docker tag %DOCKER_IMAGE%:%BUILD_NUMBER% %DOCKER_IMAGE%:latest'
+                    bat 'docker push %DOCKER_IMAGE%:latest'
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'ec2-ssh-key',
+                    keyFileVariable: 'SSH_KEY',
+                    usernameVariable: 'SSH_USER'
+                )]) {
+                    bat '''
+                        C:\\Windows\\System32\\OpenSSH\\ssh.exe -i "%SSH_KEY%" -o StrictHostKeyChecking=accept-new %SSH_USER%@%EC2_HOST% "sudo k3s kubectl set image deployment/expense-tracker expense-tracker=%DOCKER_IMAGE%:%BUILD_NUMBER% && sudo k3s kubectl rollout status deployment/expense-tracker --timeout=180s"
+                    '''
                 }
             }
         }
@@ -39,7 +57,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build, tests, Docker image creation, and publishing completed successfully.'
+            echo 'Build, tests, Docker publishing, and Kubernetes deployment completed successfully.'
         }
         failure {
             echo 'Pipeline failed. Check the stage logs.'
