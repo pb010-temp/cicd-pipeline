@@ -1,0 +1,28 @@
+---
+- name: Configure EC2 server and install k3s
+  hosts: k3s_server
+  become: true
+
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - ca-certificates
+        state: present
+
+    - name: Download and install k3s
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Ensure k3s service is running
+      systemd:
+        name: k3s
+        state: started
+        enabled: true
