@@ -1,3 +1,4 @@
+
 package com.cia.cicd;
 
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class AppController {
 
     private final List<Expense> expenses = new CopyOnWriteArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(20);
+    private final AtomicLong idCounter = new AtomicLong(10);
 
     public AppController() {
         seedSampleData();
@@ -22,7 +23,7 @@ public class AppController {
 
     public void resetData() {
         expenses.clear();
-        idCounter.set(20);
+        idCounter.set(10);
         seedSampleData();
     }
 
@@ -33,20 +34,10 @@ public class AppController {
         expenses.add(new Expense(4L, "2026-10-03", "Bus Ticket", "Transport", "Expense", 50.0));
         expenses.add(new Expense(5L, "2026-10-04", "Netflix Subscription", "Entertainment", "Expense", 199.0));
         expenses.add(new Expense(6L, "2026-10-05", "Electricity Bill", "Bills", "Expense", 900.0));
-        expenses.add(new Expense(7L, "2026-10-06", "Groceries", "Food", "Expense", 450.0));
-        expenses.add(new Expense(8L, "2026-10-07", "Lunch", "Food", "Expense", 150.0));
-        expenses.add(new Expense(9L, "2026-10-08", "Bus Ticket", "Transport", "Expense", 50.0));
-        expenses.add(new Expense(10L, "2026-10-09", "Freelance Payment", "Other Income", "Income", 5000.0));
-        expenses.add(new Expense(11L, "2026-10-10", "Groceries", "Food", "Expense", 800.0));
-        expenses.add(new Expense(12L, "2026-10-11", "Mobile Recharge", "Bills", "Expense", 299.0));
-        expenses.add(new Expense(13L, "2026-10-12", "Shopping", "Shopping", "Expense", 1500.0));
-        expenses.add(new Expense(14L, "2026-10-13", "Bus Ticket", "Transport", "Expense", 50.0));
-        expenses.add(new Expense(15L, "2026-10-14", "House Rent", "Rent", "Expense", 8000.0));
-        expenses.add(new Expense(16L, "2026-10-15", "Lunch", "Food", "Expense", 180.0));
-        expenses.add(new Expense(17L, "2026-10-16", "Electricity Bill", "Bills", "Expense", 900.0));
-        expenses.add(new Expense(18L, "2026-10-17", "Groceries", "Food", "Expense", 650.0));
-        expenses.add(new Expense(19L, "2026-10-18", "Netflix Subscription", "Entertainment", "Expense", 199.0));
-        expenses.add(new Expense(20L, "2026-10-19", "Bus Ticket", "Transport", "Expense", 50.0));
+        expenses.add(new Expense(7L, "2026-10-09", "Freelance Payment", "Other Income", "Income", 5000.0));
+        expenses.add(new Expense(8L, "2026-10-11", "Mobile Recharge", "Bills", "Expense", 299.0));
+        expenses.add(new Expense(9L, "2026-10-13", "Shopping", "Shopping", "Expense", 1500.0));
+        expenses.add(new Expense(10L, "2026-10-15", "Lunch", "Food", "Expense", 180.0));
     }
 
     @GetMapping("/health")
