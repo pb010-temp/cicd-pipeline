@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -15,6 +16,14 @@ pipeline {
         stage('Build and Test') {
             steps {
                 bat 'mvn clean package'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat 'mvn sonar:sonar -Dsonar.projectKey=cicd-pipeline'
+                }
             }
         }
 
@@ -59,7 +68,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build, tests, Docker publishing, and Kubernetes deployment completed successfully.'
+            echo 'Build, tests, SonarQube analysis, Docker publishing, and Kubernetes deployment completed successfully.'
         }
         failure {
             echo 'Pipeline failed. Check the stage logs.'
