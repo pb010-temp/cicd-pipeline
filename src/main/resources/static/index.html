@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense &amp; Income Tracker - Java Web App</title>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('app-theme') || 
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <style>
         :root {
             --bg: #f8fafc;
@@ -22,6 +29,24 @@
             --expense-border: #fca5a5;
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
             --radius: 12px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0b1120;
+            --surface: #1e293b;
+            --surface-alt: #334155;
+            --border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --income: #22c55e;
+            --income-bg: rgba(34, 197, 94, 0.15);
+            --income-border: rgba(34, 197, 94, 0.3);
+            --expense: #f87171;
+            --expense-bg: rgba(239, 68, 68, 0.15);
+            --expense-border: rgba(239, 68, 68, 0.3);
+            --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -391,6 +416,44 @@
             font-size: 0.85rem;
             padding: 12px 0;
         }
+
+        /* Dark Mode Theme Toggle & Overrides */
+        .btn-theme {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--surface-alt);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-theme:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        [data-theme="dark"] .badge-status {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        [data-theme="dark"] .btn-delete {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] select {
+            background-color: #0f172a;
+            color: #f8fafc;
+            border-color: #334155;
+        }
     </style>
 </head>
 <body>
@@ -408,6 +471,9 @@
                 </span>
                 <span class="badge">Port: 8081</span>
                 <span class="badge" id="version-badge">v1.0.0</span>
+                <button type="button" id="theme-toggle" class="btn-theme" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    Dark Mode
+                </button>
             </div>
         </header>
 
@@ -700,8 +766,30 @@
             document.getElementById('date-input').value = today;
         }
 
+        // Theme management
+        function initTheme() {
+            const saved = localStorage.getItem('app-theme') || 
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(saved);
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('app-theme', theme);
+            const btn = document.getElementById('theme-toggle');
+            if (btn) {
+                btn.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
             setDefaultDate();
             fetchInfo();
             loadRecords();
