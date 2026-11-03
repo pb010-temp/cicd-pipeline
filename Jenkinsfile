@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -59,7 +58,7 @@ pipeline {
                         icacls "%SSH_KEY%" /inheritance:r
                         icacls "%SSH_KEY%" /grant:r "*S-1-5-18:R"
 
-                        C:\\Windows\\System32\\OpenSSH\\ssh.exe -i "%SSH_KEY%" -o StrictHostKeyChecking=yes %SSH_USER%@%EC2_HOST% "sudo k3s kubectl set image deployment/expense-tracker expense-tracker=%DOCKER_IMAGE%:%BUILD_NUMBER% && sudo k3s kubectl rollout status deployment/expense-tracker --timeout=180s"
+                        C:\\Windows\\System32\\OpenSSH\\ssh.exe -i "%SSH_KEY%" -o StrictHostKeyChecking=yes %SSH_USER%@%EC2_HOST% "sudo k3s kubectl scale deployment/expense-tracker --replicas=4 && sudo k3s kubectl set image deployment/expense-tracker expense-tracker=%DOCKER_IMAGE%:%BUILD_NUMBER% && sudo k3s kubectl rollout status deployment/expense-tracker --timeout=180s"
                     '''
                 }
             }
