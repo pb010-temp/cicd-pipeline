@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense &amp; Income Tracker - Java Web App</title>
+    <!-- Dark Mode initialization disabled
     <script>
         (function () {
             const theme = localStorage.getItem('app-theme') ||
@@ -12,6 +13,7 @@
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>
+    -->
     <style>
         :root {
             --bg: #f8fafc;
@@ -32,6 +34,7 @@
             --radius: 12px;
         }
 
+        /* Dark mode styles commented out
         [data-theme="dark"] {
             --bg: #0b1120;
             --surface: #1e293b;
@@ -49,6 +52,7 @@
             --expense-border: rgba(239, 68, 68, 0.3);
             --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
+        */
 
         * {
             box-sizing: border-box;
@@ -422,7 +426,7 @@
             padding: 12px 0;
         }
 
-        /* Dark Mode Theme Toggle & Overrides */
+        /* Dark Mode Theme Toggle & Overrides (Commented out)
         .btn-theme {
             display: inline-flex;
             align-items: center;
@@ -459,6 +463,7 @@
             color: #f8fafc;
             border-color: #334155;
         }
+        */
     </style>
 </head>
 
@@ -477,10 +482,12 @@
                 </span>
                 <span class="badge">Port: 8081</span>
                 <span class="badge" id="version-badge">v1.0.0</span>
+                <!-- Theme toggle commented out
                 <button type="button" id="theme-toggle" class="btn-theme" onclick="toggleTheme()"
                     title="Toggle Dark/Light Mode">
                     Dark Mode
                 </button>
+                -->
             </div>
         </header>
 
@@ -774,7 +781,7 @@
             document.getElementById('date-input').value = today;
         }
 
-        // Theme management
+        /* Theme management commented out
         function initTheme() {
             const saved = localStorage.getItem('app-theme') ||
                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -794,10 +801,11 @@
             const current = document.documentElement.getAttribute('data-theme') || 'light';
             applyTheme(current === 'dark' ? 'light' : 'dark');
         }
+        */
 
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
+            // initTheme();
             setDefaultDate();
             fetchInfo();
             loadRecords();
